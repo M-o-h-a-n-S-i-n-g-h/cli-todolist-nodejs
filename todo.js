@@ -11,7 +11,12 @@ function getData(file = dataPath) {
   return JSON.parse(text.length ? text : "{}");
 }
 
-function list() {
+function ls() {
+  const length = fs.readFileSync("todo.txt", "utf-8");
+  console.log(length);
+}
+
+function getReverseKeys() {
   const data = getData();
   let array = [];
   let keys = Object.keys(data).reverse();
@@ -21,9 +26,12 @@ function list() {
   return array;
 }
 
-function saveTodo(todo, path = "todo.txt") {
-  //   const data = getData();
-  fs.appendFileSync(path, JSON.stringify(todo) + os.EOL);
+function saveTodo(path = "todo.txt") {
+  const data = getReverseKeys();
+  fs.writeFileSync(path, "");
+  for (let i = 0; i < data.length; i++) {
+    fs.appendFileSync(path, data[i] + os.EOL);
+  }
 }
 
 function add(todo) {
@@ -36,7 +44,7 @@ function add(todo) {
   fs.writeFileSync(dataPath, JSON.stringify(todos));
   index++;
   fs.writeFileSync("lengthId.txt", JSON.stringify(index));
-  console.log(`Added todo: "${todo}"`);
+  process.stdout.write(`Added todo: "${todo}"`);
   saveTodo(todo);
 }
 
@@ -44,7 +52,7 @@ switch (command) {
   case "add":
     add(todo);
     break;
-  case "list":
-    console.log(list());
+  case "ls":
+    console.log(ls());
     break;
 }
