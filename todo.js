@@ -11,9 +11,27 @@ function getData(file = dataPath) {
   return JSON.parse(text.length ? text : "{}");
 }
 
+const getTodoByTitle = (title) => {
+  const titles = getData();
+  for (let [key, value] in titles) {
+    if (titles[key].title === title) {
+      return key;
+    }
+  }
+};
+
 function ls() {
-  const length = fs.readFileSync("todo.txt", "utf-8");
-  console.log(length);
+  const data = getData();
+  const todos = fs.readFileSync("todo.txt", "utf-8");
+  const datas = todos.split(os.EOL).filter((todo) => todo !== "");
+  const filteredKey = datas.map((data) => getTodoByTitle(data));
+  let length = datas.length;
+  for (let i = length; i > 0; length--) {
+    if (length === 0) {
+      return;
+    }
+    process.stdout.write(`[${length}] ${data[length].title}` + os.EOL);
+  }
 }
 
 function getReverseKeys() {
@@ -45,7 +63,7 @@ function add(todo) {
   index++;
   fs.writeFileSync("lengthId.txt", JSON.stringify(index));
   process.stdout.write(`Added todo: "${todo}"`);
-  saveTodo(todo);
+  saveTodo();
 }
 
 switch (command) {
