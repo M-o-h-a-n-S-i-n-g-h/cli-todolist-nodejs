@@ -8,6 +8,20 @@ const doneFilePath = "done.txt";
 const deleteMessage = `Deleted todo #${todo}`;
 const doneMessage = `Marked #${todo} as Done`;
 
+if (!command || command === "help") {
+  help();
+}
+
+function help() {
+  return process.stdout.write(`Usage :-
+  $ ./todo add "todo item"  # Add a new todo
+  $ ./todo ls               # Show remaining todos
+  $ ./todo del NUMBER       # Delete a todo
+  $ ./todo done NUMBER      # Complete a todo
+  $ ./todo help             # Show usage
+  $ ./todo report           # Statistics`);
+}
+
 function setTime() {
   let date = new Date();
   let fullDate =
@@ -52,11 +66,18 @@ function saveTodo(array, path = filePath) {
 }
 
 function addTodo(todo) {
-  const data = fs.readFileSync(filePath, "utf-8");
-  let todosArray = data.split(os.EOL).filter((value) => value !== "");
-  todosArray.push(todo);
-  saveTodo(todosArray, filePath);
-  return process.stdout.write(`Added todo: ${todo}`);
+  const _ = fs.readFile(filePath, "utf-8", (error, _) => {
+    if (error) {
+      fs.writeFileSync("todo.txt", todo);
+      return process.stdout.write(`Added Todo: ${todo}`);
+    } else {
+      const tasks = fs.readFileSync("todo.txt", "utf-8");
+      let todosArray = tasks.split(os.EOL).filter((value) => value.trim());
+      todosArray.push(todo);
+      saveTodo(todosArray, filePath);
+      return process.stdout.write(`Added todo: ${todo}`);
+    }
+  });
 }
 
 function ls() {
@@ -82,10 +103,6 @@ function deleteTodo(todo, printMessage = deleteMessage) {
     .readFileSync(filePath, "utf-8")
     .split(os.EOL)
     .filter((task) => task !== "");
-
-  //   if (index === 0) {
-  //     index = 1;
-  //   }
 
   if (!todos[index - 1]) {
     return process.stdout.write(
