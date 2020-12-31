@@ -95,7 +95,7 @@ function ls() {
         if (lists[i] === undefined) {
           continue;
         } else {
-          process.stdout.write(`[${index}] ${lists[i]}\n`);
+          process.stdout.write(`[${index}] ${lists[i]}\n`); //!Removed carriage return
           index--;
         }
       }
